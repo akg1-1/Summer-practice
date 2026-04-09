@@ -1,0 +1,106 @@
+/* Добавляем стили для меню */
+.menu-app-container {
+  align-items: center;
+}
+
+.menu-container {
+  justify-items: center;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  margin-bottom: 30px;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.app-title {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.menu-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.menu-button {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.menu-button.active {
+  background-color: white;
+  color: var(--primary-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.menu-icon {
+  font-size: 1.1rem;
+}
+
+/* Адаптивность */
+@media (max-width: 992px) {
+  .menu-navigation {
+    gap: 8px;
+  }
+  
+  .menu-button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-container {
+    padding: 12px 15px;
+  }
+  
+  .menu-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .menu-navigation {
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .menu-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-title {
+    font-size: 1.5rem;
+  }
+  
+  .menu-button {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+}

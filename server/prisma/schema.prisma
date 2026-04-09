@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sportsman {
+  sportsmenId Int      @id @default(autoincrement()) @map("sportsmen_id")
+  firstName   String   @map("first_name") @db.VarChar(255)
+  lastName    String   @map("last_name") @db.VarChar(255)
+  patronymic  String?  @db.VarChar(255)
+  birthDate   DateTime @map("birth_date") @db.Date
+
+  ranks SportsmenRank[]
+
+  @@unique([firstName, lastName, patronymic, birthDate])
+  @@map("sportsmens")
+}
+
+enum Measure {
+  METER
+  SECOND
+  KILOGRAM
+  POINTS
+  MINUTES
+  HOURS
+}
+
+model SportType {
+  typeId              Int     @id @default(autoincrement()) @map("sport_type_id")
+  typeName            String  @map("sport_type_name") @db.VarChar(255)
+  measure             Measure @default(METER)
+  thirdSportCategory  String? @map("third_sport_category") @db.VarChar(255)
+  secondSportCategory String? @map("second_sport_category") @db.VarChar(255)
+  firstSportCategory  String? @map("first_sport_category") @db.VarChar(255)
+  kms                 String? @db.VarChar(255)
+  ms                  String? @db.VarChar(255)
+
+  sportsmenRanks  SportsmenRank[]
+  competitionType CompetitionSportType[]
+
+  @@unique([typeName])
+  @@map("sport_types")
+}
+
+enum RankValue {
+  FIRST
+  SECOND
+  THIRD
+  KMS
+  MS
+}
+
+model SportsmenRank {
+  sportsmenId   Int        @map("sportsmen_id")
+  sportTypeId   Int        @map("sport_type_id")
+  sportsmenRank RankValue? @map("sportsmen_rank")
+  rankDate      DateTime?  @map("rank_date") @db.Date
+
+  sportsmenCompetition SportsmenCompetition[]
+  sportsman            Sportsman              @relation(fields: [sportsmenId], references: [sportsmenId], onDelete: Restrict)
+  sportType            SportType              @relation(fields: [sportTypeId], references: [typeId], onDelete: Restrict)
+
+  @@id([sportsmenId, sportTypeId])
+  @@map("sportsmen_ranks")
+}
+
+enum Regions {
+  SFO
+  DFO
+  UFO
+  SZFO
+  PFO
+  CFO
+}
+
+model City {
+  cityId   Int     @id @default(autoincrement()) @map("city_id")
+  cityName String  @map("city_name") @db.VarChar(255)
+  region   Regions @default(CFO)
+
+  competitions Competition[]
+
+  @@unique([cityName, region], name: "city_region_unique")
+  @@map("cities")
+}
+
+model Competition {
+  competitionId     Int      @id @default(autoincrement()) @map("id_competition")
+  competitionName   String   @map("competition_name") @db.VarChar(255)
+  dateCompetition   DateTime @map("date_competition") @db.Date
+  cityCompetitionId Int      @map("city_competition_id")
+
+  city City @relation(fields: [cityCompetitionId], references: [cityId], onDelete: Restrict)
+
+  competitionType CompetitionSportType[]
+
+  @@unique([competitionName, dateCompetition, cityCompetitionId])
+  @@map("competitions")
+}
+
+model CompetitionSportType {
+  competitionId Int @map("id_competition")
+  sportTypeId   Int @map("id_sport_type")
+
+  competition          Competition            @relation(fields: [competitionId], references: [competitionId], onDelete: Restrict)
+  sportType            SportType              @relation(fields: [sportTypeId], references: [typeId], onDelete: Restrict)
+  sportsmenCompetition SportsmenCompetition[]
+
+  @@id([competitionId, sportTypeId])
+  @@map("competition_sport_types")
+}
+
+model SportsmenCompetition {
+  sportsmenId   Int     @map("id_sportsmen")
+  sportTypeId   Int     @map("id_sport_type")
+  competitionId Int     @map("id_competition")
+  place         Int?    @map("sportsmen_place")
+  result        Int? @map("sportmen_result")
+  ageGroup      String  @map("age_group")
+
+  sportsmenRank SportsmenRank @relation(fields: [sportsmenId, sportTypeId], references: [sportsmenId, sportTypeId], onDelete: Restrict)
+
+  competitionSport CompetitionSportType @relation(fields: [competitionId, sportTypeId], references: [competitionId, sportTypeId], onDelete: Restrict)
+
+  @@id([sportsmenId, sportTypeId, competitionId])
+  @@map("sportsmen_competitions")
+ 
+}
+
+

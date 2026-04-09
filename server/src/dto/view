@@ -1,0 +1,17 @@
+CREATE OR REPLACE VIEW reports AS
+SELECT
+  ROW_NUMBER() OVER ()::integer AS report_id, -- Явное преобразование в integer
+  st.sport_type_id::integer AS sport_type_id, -- Явное преобразование в integer
+  st.sport_type_name,
+  COUNT(DISTINCT c.id_competition)::integer AS competition_count, -- Преобразование
+  COUNT(DISTINCT sc.id_sportsmen)::integer AS participant_count, -- Преобразование
+  sc.age_group,
+  EXTRACT(YEAR FROM c.date_competition)::integer AS report_year -- Преобразование
+FROM sportsmen_competitions sc
+JOIN sport_types st ON sc.id_sport_type = st.sport_type_id
+JOIN competitions c ON sc.id_competition = c.id_competition
+GROUP BY 
+  st.sport_type_id, 
+  st.sport_type_name, 
+  sc.age_group, 
+  EXTRACT(YEAR FROM c.date_competition);
